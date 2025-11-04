@@ -1,0 +1,21 @@
+id,region_name,province,district,commune,neighborhood,latitude,longitude,altitude,risk_level,population,created_at
+1,Luanda,Luanda,Distrito 1,Comuna Benilson,Malueca,-8.8625,13.2951,47,critical,45732,2025-11-04T08:05:05.838735
+2,Luanda,Luanda,Distrito 1,Comuna Benilson,Cazenga,-8.8403,13.2446,27,high,22962,2025-11-04T08:05:05.838880
+3,Luanda,Luanda,Distrito 1,Comuna Benilson,Rangel,-8.8134,13.2601,28,high,2685,2025-11-04T08:05:05.838979
+4,Luanda,Luanda,Distrito 1,Comuna Benilson,Samba,-8.8944,13.2722,34,medium,3433,2025-11-04T08:05:05.839055
+5,Luanda,Luanda,Distrito 1,Comuna Kilamba,Kilamba Kiaxi,-8.8818,13.2183,16,medium,29693,2025-11-04T08:05:05.839124
+6,Luanda,Luanda,Distrito 1,Comuna Kilamba,Viana,-8.8993,13.2023,31,high,19942,2025-11-04T08:05:05.839188
+7,Luanda,Luanda,Distrito 1,Comuna Kilamba,Cacuaco,-8.8861,13.2292,20,high,1189,2025-11-04T08:05:05.839249
+8,Luanda,Luanda,Distrito 2,Comuna Icolo,Icolo e Bengo,-8.8909,13.2618,48,high,2267,2025-11-04T08:05:05.839315
+9,Luanda,Luanda,Distrito 2,Comuna Icolo,Belas,-8.8408,13.2046,11,low,15502,2025-11-04T08:05:05.839788
+10,Luanda,Luanda,Distrito 2,Comuna Icolo,Zango,-8.8987,13.2942,18,medium,44001,2025-11-04T08:05:05.839871
+11,Benguela,Benguela,Distrito 1,Comuna Benguela,Lobito,-12.5695,13.3195,93,critical,24483,2025-11-04T08:05:05.839935
+12,Benguela,Benguela,Distrito 1,Comuna Benguela,Catumbela,-12.5878,13.399,56,high,15541,2025-11-04T08:05:05.839993
+13,Benguela,Benguela,Distrito 1,Comuna Benguela,Baia Farta,-12.5609,13.3364,13,medium,2021,2025-11-04T08:05:05.840053
+14,Benguela,Benguela,Distrito 1,Comuna Balombo,Balombo,-12.548,13.4093,63,low,46758,2025-11-04T08:05:05.840109
+15,Benguela,Benguela,Distrito 1,Comuna Balombo,Ganda,-12.5158,13.39,83,medium,34763,2025-11-04T08:05:05.840162
+16,Huambo,Huambo,Distrito 1,Comuna Huambo,Huambo Centro,-12.7402,15.8844,1799,medium,26851,2025-11-04T08:05:05.840220
+17,Huambo,Huambo,Distrito 1,Comuna Huambo,Ekundu,-12.7955,15.7651,1681,high,10268,2025-11-04T08:05:05.840275
+18,Huambo,Huambo,Distrito 1,Comuna Huambo,Caala,-12.7413,15.8931,1787,critical,40976,2025-11-04T08:05:05.840328
+19,Huambo,Huambo,Distrito 1,Comuna Ebo,Ebo,-12.7704,15.7331,1688,high,3568,2025-11-04T08:05:05.840381
+20,Huambo,Huambo,Distrito 1,Comuna Ebo,Mungo,-12.7228,15.7397,1662,high,23002,2025-11-04T08:05:05.840434
