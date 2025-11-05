@@ -37,8 +37,3 @@ As inundações em áreas urbanas de Angola, especialmente em Luanda, causam **p
 # 🛠️ Instalação
 ```bash
 pip install -r requirements.txt
-
-# Como rodar o "appUI"?
-python -m streamlit run appUI.py
-ou então
-py -m streamlit run appUI.py
