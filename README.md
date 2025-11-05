@@ -34,6 +34,7 @@ As inundações em áreas urbanas de Angola, especialmente em Luanda, causam **p
 | **ODS 3** – Saúde e Bem-Estar | Previne mortes e doenças relacionadas a enchentes |
 | **ODS 1** – Erradicação da Pobreza | Protege famílias vulneráveis em musseques e áreas de risco |
 
-# 🛠️ Instalação
-```bash
-pip install -r requirements.txt
+# Organização dos Diretórios
+- **docs**: contém os documentos baseados em templates do projecto final
+- **implementation**: contém dois diretórios responsáveis pela implementação do código de treinamento do modelo, teste de probabilidade de inundações e uma parte para a UI
+- **TODO**: Possue as futuras implementações para o projecto.
