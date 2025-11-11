@@ -37,4 +37,3 @@ As inundações em áreas urbanas de Angola, especialmente em Luanda, causam **p
 # Organização dos Diretórios
 - **docs**: contém os documentos baseados em templates do projecto final
 - **implementation**: contém dois diretórios responsáveis pela implementação do código de treinamento do modelo, teste de probabilidade de inundações e uma parte para a UI
-- **TODO**: Possue as futuras implementações para o projecto.
