@@ -1,0 +1,4 @@
+Modelo,Acurácia,Precisão,Recall,F1-Score,AUC-ROC
+Random Forest,0.74,0.7792,0.8696,0.8219,0.6919
+XGBoost,0.76,0.7922,0.8841,0.8356,0.7137
+Regressão Logística,0.72,0.7808,0.8261,0.8028,0.7518
