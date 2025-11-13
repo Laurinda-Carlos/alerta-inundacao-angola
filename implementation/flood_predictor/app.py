@@ -27,6 +27,7 @@ app = Flask(__name__)
 # ===============================
 # Carregar modelos e artefatos
 # ===============================
+"""
 ARTIFACTS_DIR = "models"
 
 # Melhor modelo
@@ -56,23 +57,10 @@ PROV_STATS_FILE = max(
     key=lambda x: os.path.getctime(os.path.join(ARTIFACTS_DIR, x))
 )
 provincia_stats = joblib.load(os.path.join(ARTIFACTS_DIR, PROV_STATS_FILE))
-
-# ===== Função auxiliar para previsão de risco =====
-def prever_risco(df_row, provincia):
-    df_model = pd.DataFrame([{
-        "precipitacao": df_row["precipitacao_mm"],
-        "temperatura": df_row["temperatura_C"],
-        "umidade": df_row["humidade_percent"],
-        "provincia": provincia
-    }])
-    # Preencher colunas faltantes
-    for col in feature_columns:
-        if col not in df_model.columns:
-            df_model[col] = 0
-    df_model = df_model[feature_columns]
-    prob = model.predict_proba(df_model)[:,1][0]
-    risco = "Baixo" if prob < 0.33 else "Médio" if prob < 0.66 else "Alto"
-    return prob, risco
+"""
+modelo = joblib.load("models/melhor_modelo_inundacoes_20251113_052939.pkl")
+feature_columns = joblib.load("models/feature_columns_20251113_052939.pkl")
+label_encoders = joblib.load("models/label_encoders_20251113_052939.pkl")
 # ===============================
 # Rotas do Flask
 # ===============================
@@ -140,47 +128,66 @@ def informacoes():
 def documentacao():
     return render_template("documetacao.html")
 
+# Página de documentação
+@app.route("/prever")
+def prever():
+    return render_template("predict.html")
 # ===============================
 # API Endpoints
 # ===============================
+@app.route('/api/predict', methods=['POST'])
+def predict():
+    try:
+        data = request.get_json()
 
-# POST /api/predict
-@app.route("/api/predict", methods=["POST"])
-def api_predict():
-    data = request.get_json()
+        # Extrair variáveis
+        provincia = data.get("provincia", "Luanda")
+        mes = int(data.get("mes", 11))
+        precipitacao = float(data.get("precipitacao", 0))
+        temperatura = float(data.get("temperatura", 0))
+        humidade = float(data.get("humidade", 0))
+        vento = float(data.get("vento", 0))
+        radiacao = float(data.get("radiacao_solar", 0))
 
-    # Checar campos obrigatórios
-    required_fields = ["precipitacao", "temperatura", "umidade", "provincia"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Campo '{field}' é obrigatório"}), 400
+        # Criar DataFrame
+        entrada = pd.DataFrame([{
+            "provincia": provincia,
+            "mes": mes,
+            "precipitacao": precipitacao,
+            "temperatura": temperatura,
+            "humidade": humidade,
+            "vento": vento,
+            "radiacao_solar": radiacao
+        }])
 
-    # Criar DataFrame com uma linha
-    df = pd.DataFrame([data])
+        # Aplicar Label Encoders, se houver colunas categóricas
+        for col, encoder in label_encoders.items():
+            if col in entrada.columns:
+                entrada[col] = encoder.transform(entrada[col])
 
-    # Codificar província
-    if "provincia" in df.columns and df["provincia"].iloc[0] in label_encoders["provincia"].classes_:
-        df["provincia"] = label_encoders["provincia"].transform(df["provincia"])
-    else:
-        return jsonify({"error": f"Província '{data['provincia']}' inválida"}), 400
+        # Garantir alinhamento de colunas com o treino
+        entrada = entrada.reindex(columns=feature_columns, fill_value=0)
 
-    # Preencher valores ausentes com zero (ou medianas futuras se quiser)
-    for col in feature_columns:
-        if col not in df.columns:
-            df[col] = 0
+        # Fazer previsão
+        prob = modelo.predict_proba(entrada)[0][1]  # probabilidade da classe "inundação"
 
-    # Garantir a ordem correta das features
-    df = df[feature_columns]
+        # Classificar o risco
+        if prob >= 0.7:
+            risco = "Alto"
+        elif prob >= 0.4:
+            risco = "Médio"
+        else:
+            risco = "Baixo"
 
-    # Prever
-    probabilidade = model.predict_proba(df)[:, 1][0]
-    risco = "Baixo" if probabilidade < 0.33 else "Médio" if probabilidade < 0.66 else "Alto"
+        return jsonify({
+            "provincia": provincia,
+            "mes": mes,
+            "probabilidade_flood": round(float(prob), 3),
+            "risco": risco
+        })
 
-    return jsonify({
-        "provincia": data["provincia"],
-        "probabilidade_inundacao": round(probabilidade, 2),
-        "risco": risco
-    })
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 400
 
 # GET /api/provincias
 @app.route("/api/provincias", methods=["GET"])
@@ -194,49 +201,6 @@ def api_provincias():
             "risco": risco
         })
     return jsonify(provincias_risco)
-
-from datetime import datetime, timedelta
-
-@app.route("/api/hero/<provincia>", methods=["GET"])
-def api_hero(provincia):
-    # Carregar dados do CSV da província
-    df = pd.read_csv(f"datasets_provincias/{provincia}_nasa_power.csv")
-
-    # Últimos valores de vento e humidade
-    ultima_linha = df.iloc[-1]
-    vento = ultima_linha["vento_kmh"]
-    humidade = ultima_linha["humidade_percent"]
-
-    # Previsão de risco atual
-    data_atual = {
-        "precipitacao": ultima_linha["precipitacao_mm"],
-        "temperatura": ultima_linha["temperatura_C"],
-        "umidade": ultima_linha["humidade_percent"],
-        "provincia": provincia
-    }
-    df_model = pd.DataFrame([data_atual])
-    df_model["provincia"] = label_encoders["provincia"].transform(df_model["provincia"])
-    df_model = df_model[feature_columns]
-    probabilidade = model.predict_proba(df_model)[:, 1][0]
-    risco_atual = "Baixo" if probabilidade < 0.33 else "Médio" if probabilidade < 0.66 else "Alto"
-
-    # Previsão dos próximos 4 meses
-    meses = []
-    hoje = datetime.today()
-    for i in range(4):
-        mes_data = hoje + timedelta(days=30*i)
-        # Exemplo simples usando média histórica de flood_rate (se existir)
-        flood_rate = df["flood_rate"].mean() if "flood_rate" in df.columns else 0
-        risco_mes = "Baixo" if flood_rate < 0.33 else "Médio" if flood_rate < 0.66 else "Alto"
-        meses.append({"mes": mes_data.strftime("%B"), "risco": risco_mes})
-
-    return jsonify({
-        "provincia": provincia,
-        "vento": vento,
-        "humidade": humidade,
-        "risco_atual": risco_atual,
-        "previsao_meses": meses
-    })
 
 # ===============================
 # Executar Flask
